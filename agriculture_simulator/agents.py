@@ -18,6 +18,7 @@ class Sheep(TargetWalker):
         self.harvest = 0
         self._limit_harvest = 500
         self.state = 'DROP'
+        self.agent_type= 'HARVEST'
 
     def step(self):
         """
@@ -67,6 +68,7 @@ class Wolf(TargetWalker):
         self.water_storage = 0
         self._water_cap = 1000
         self.state = 'PICK'
+        self.agent_type = 'WATER'
 
     def step(self):
         self.target_move()
@@ -83,8 +85,8 @@ class Wolf(TargetWalker):
             self.water_storage = self._water_cap
         patch = [obj for obj in this_cell if isinstance(obj, GrassPatch)]
         if len(patch) > 0 and self.water_storage > 0:
-            patch[0].water_level = patch[0].water_level + 10
-            self.water_storage = self.water_storage - 10
+            patch[0].water_level = patch[0].water_level + self.model.grass_regrowth_time
+            self.water_storage = self.water_storage - self.model.grass_regrowth_time
 
 
 
@@ -105,13 +107,17 @@ class GrassPatch(Agent):
         self.fully_grown = fully_grown
         self.countdown = countdown
         self.pos = pos
-        self.water_level = 0
+        self.water_level = self.random.random()
+        self.agent_type = 'GRASS'
 
     def step(self):
-        self.water_level = self.water_level - 1
+        if self.fully_grown:
+            self.water_level = self.water_level - 1
+        else:
+            self.water_level = self.water_level - 2
         if self.water_level == - self.model.grass_regrowth_time and self.fully_grown:
             self.fully_grown = False
-        elif self.water_level < -100:
+        elif self.water_level < -10* self.model.grass_regrowth_time:
             self.model.grid._remove_agent(self.pos, self)
             self.model.schedule.remove(self)
         elif not self.fully_grown:
@@ -136,6 +142,7 @@ class WaterSource(Agent):
         self.fully_grown = False
         self.pos = pos
         self.water_level = 999999999
+        self.agent_type = 'WS'
 
 class Shed(Agent):
     """
@@ -150,3 +157,4 @@ class Shed(Agent):
         self.fully_grown = False
         self.pos = pos
         self.harvest_level = 0
+        self.agent_type = 'SHED'

@@ -69,6 +69,7 @@ class TargetWalker(Agent):
         self.moore = moore
         self.target = None
         self.state = 'PICK'
+        self.agent_type = None
 
     def target_move(self):
         """
@@ -77,20 +78,32 @@ class TargetWalker(Agent):
         # Pick the next cell from the adjacent cells.
         next_moves = self.model.grid.get_neighborhood(self.pos, self.moore, True)
         next_move = None
-        if self.state == 'DROP':
-            for move in next_moves:
-                patch = self.model.grid.get_cell_list_contents(move)
-                if len(patch) > 0:
-                    if patch[0].fully_grown:
+        if self.agent_type is not None:
+            if self.state == 'DROP' and self.agent_type == 'WATER':
+                for move in next_moves:
+                    patch = self.model.grid.get_cell_list_contents(move)
+                    min_level = 5000
+                    if len(patch) > 0:
+                        for i in range(len(patch)):
+                            if patch[i].agent_type == 'GRASS' and min_level >= patch[i].water_level:
+                                next_move = move
+                                min_level = patch[i].water_level
+            elif self.state == 'DROP' and self.agent_type == 'HARVEST':
+                for move in next_moves:
+                    patch = self.model.grid.get_cell_list_contents(move)
+                    if len(patch) > 0:
+                        if patch[0].fully_grown:
+                            next_move = move
+                            break
+                if next_move == None:
+                    next_move = self.random.choice(next_moves)
+            elif self.state == 'PICK':
+                for move in next_moves:
+                    if abs(self.target.pos[0] - move[0]) + abs(self.target.pos[1] - move[1]) < abs(self.target.pos[0] - self.pos[0]) + abs(self.target.pos[1] - self.pos[1]):
                         next_move = move
-            if next_move == None:
-                next_move = self.random.choice(next_moves)
-
-        elif self.state == 'PICK':
-            for move in next_moves:
-                if abs(self.target.pos[0] - move[0]) + abs(self.target.pos[1] - move[1]) < abs(self.target.pos[0] - self.pos[0]) + abs(self.target.pos[1] - self.pos[1]):
-                    next_move = move
-            if next_move is None:
-                next_move = self.random.choice(next_moves)
-        # Now move:
-        self.model.grid.move_agent(self, next_move)
+                        break
+                if next_move is None:
+                    next_move = self.random.choice(next_moves)
+        if next_move is not None:
+            # Now move:
+            self.model.grid.move_agent(self, next_move)
