@@ -16,7 +16,7 @@ class Sheep(TargetWalker):
         self.fully_grown = False
         self.energy = energy
         self.harvest = 0
-        self._limit_harvest = 100
+        self._limit_harvest = 500
         self.state = 'DROP'
 
     def step(self):
@@ -35,7 +35,7 @@ class Sheep(TargetWalker):
             grass_patch = [obj for obj in this_cell if isinstance(obj, GrassPatch)]
             if len(grass_patch) > 0 and self.harvest < self._limit_harvest:
               if grass_patch[0].fully_grown:
-                self.harvest += 1
+                self.harvest += 10
                 grass_patch[0].fully_grown = False
                 if self.harvest == self._limit_harvest:
                   self.state = 'PICK'

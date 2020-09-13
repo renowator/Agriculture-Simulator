@@ -104,9 +104,22 @@ class WolfSheep(Model):
           cell = [obj for obj in this_cell if isinstance(obj, Shed)]
           if len(cell) == 0:
               break
-        ws = WaterSource(self.next_id(), (x, y), self)
-        self.grid.place_agent(ws, (x, y))
-        self.schedule.add(ws)
+        ws1 = WaterSource(self.next_id(), (x, y), self)
+        self.grid.place_agent(ws1, (x, y))
+        self.schedule.add(ws1)
+        while True:
+          x = self.random.randrange(self.width)
+          y = self.random.randrange(self.height)
+          this_cell = self.grid.get_cell_list_contents([(x,y)])
+          cell = [obj for obj in this_cell if isinstance(obj, Shed)]
+          if len(cell) == 0:
+              break
+          cell = [obj for obj in this_cell if isinstance(obj, WaterSource)]
+          if len(cell) == 0:
+              break
+        ws2 = WaterSource(self.next_id(), (x, y), self)
+        self.grid.place_agent(ws2, (x, y))
+        self.schedule.add(ws2)
 
         # Create grass patches
         if self.grass:
@@ -143,7 +156,10 @@ class WolfSheep(Model):
             y = self.random.randrange(self.height)
             energy = self.random.randrange(2 * self.wolf_gain_from_food)
             wolf = Wolf(self.next_id(), (x, y), self, True, energy)
-            wolf.target = ws
+            if abs(ws1.pos[0] - x) + abs(ws1.pos[1] - y) < abs(ws2.pos[0] - x) + abs(ws2.pos[1] - y):
+                wolf.target = ws1
+            else:
+                wolf.target = ws2
             self.grid.place_agent(wolf, (x, y))
             self.schedule.add(wolf)
 
