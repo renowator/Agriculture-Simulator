@@ -13,12 +13,10 @@ def wolf_sheep_portrayal(agent):
     portrayal = {}
 
     if type(agent) is Shed:
-        portrayal["Color"] = ["#a52a2a", "#a52a2a", "#a52a2a"]
-        portrayal["Shape"] = "rect"
-        portrayal["Filled"] = "true"
+        portrayal["Shape"] = "agriculture_simulator/resources/shed.png"
+        # https://icons8.com/web-app/36821/German-Shepherd
+        portrayal["scale"] = 0.9
         portrayal["Layer"] = 2
-        portrayal["w"] = 1
-        portrayal["h"] = 1
         portrayal["text"] = round(agent.harvest_level, 1)
         portrayal["text_color"] = "Black"
 
@@ -50,12 +48,10 @@ def wolf_sheep_portrayal(agent):
         portrayal["h"] = 1
 
     elif type(agent) is WaterSource:
-        portrayal["Color"] = ["#37FDFC", "#37FDFC", "#37FDFC"]
-        portrayal["Shape"] = "rect"
-        portrayal["Filled"] = "true"
+        portrayal["Shape"] = "agriculture_simulator/resources/water.png"
+        # https://icons8.com/web-app/36821/German-Shepherd
+        portrayal["scale"] = 0.9
         portrayal["Layer"] = 0
-        portrayal["w"] = 1
-        portrayal["h"] = 1
 
     return portrayal
 

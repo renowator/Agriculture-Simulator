@@ -80,9 +80,9 @@ class TargetWalker(Agent):
         next_move = None
         if self.agent_type is not None:
             if self.state == 'DROP' and self.agent_type == 'WATER':
+                min_level = 5000
                 for move in next_moves:
                     patch = self.model.grid.get_cell_list_contents(move)
-                    min_level = 5000
                     if len(patch) > 0:
                         for i in range(len(patch)):
                             if patch[i].agent_type == 'GRASS' and min_level >= patch[i].water_level:
@@ -102,8 +102,8 @@ class TargetWalker(Agent):
                     if abs(self.target.pos[0] - move[0]) + abs(self.target.pos[1] - move[1]) < abs(self.target.pos[0] - self.pos[0]) + abs(self.target.pos[1] - self.pos[1]):
                         next_move = move
                         break
-                if next_move is None:
-                    next_move = self.random.choice(next_moves)
-        if next_move is not None:
-            # Now move:
-            self.model.grid.move_agent(self, next_move)
+        if next_move is None:
+            next_move = self.random.choice(next_moves)
+
+        # Now move:
+        self.model.grid.move_agent(self, next_move)

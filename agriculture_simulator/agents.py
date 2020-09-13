@@ -66,17 +66,17 @@ class Wolf(TargetWalker):
         self.fully_grown = False
         self.energy = energy
         self.water_storage = 0
-        self._water_cap = 1000
+        self._water_cap = 500
         self.state = 'PICK'
         self.agent_type = 'WATER'
 
     def step(self):
         self.target_move()
         #self.energy -= 1
-        if self.water_storage > 0:
-            self.state = 'DROP'
-        else:
+        if self.water_storage < abs(self.target.pos[0] - self.pos[0]) + abs(self.target.pos[1] - self.pos[1]):
             self.state = 'PICK'
+        else:
+            self.state = 'DROP'
         # If there are plants that need water present, water
         x, y = self.pos
         this_cell = self.model.grid.get_cell_list_contents([self.pos])
@@ -86,7 +86,7 @@ class Wolf(TargetWalker):
         patch = [obj for obj in this_cell if isinstance(obj, GrassPatch)]
         if len(patch) > 0 and self.water_storage > 0:
             patch[0].water_level = patch[0].water_level + self.model.grass_regrowth_time
-            self.water_storage = self.water_storage - self.model.grass_regrowth_time
+            self.water_storage = self.water_storage - 1
 
 
 
@@ -107,7 +107,7 @@ class GrassPatch(Agent):
         self.fully_grown = fully_grown
         self.countdown = countdown
         self.pos = pos
-        self.water_level = self.random.random()
+        self.water_level = self.random.random()*self.model.grass_regrowth_time
         self.agent_type = 'GRASS'
 
     def step(self):
