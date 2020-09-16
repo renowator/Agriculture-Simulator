@@ -1,4 +1,7 @@
 # Agriculture Multi-Agent Simulation
 
-## ToDo
+## TODOs
 
+* Create field
+* Create crops
+* Create agents
